@@ -1,0 +1,398 @@
+/* Amber Valley - Master Stylesheet */
+:root {
+  --ink: #382414;
+  --paper: #fff5e4;
+  --accent: #d25b2a;
+  --accent-glow: rgba(210, 91, 42, 0.4);
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #faecd6;
+    --paper: #281a13;
+    --accent: #f0834e;
+    --accent-glow: rgba(240, 131, 78, 0.45);
+  }
+}
+:root[data-theme="dark"] {
+  --ink: #faecd6;
+  --paper: #281a13;
+  --accent: #f0834e;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #0b111c;
+  font-family: 'Nunito', Gaegu, sans-serif;
+  color: var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+canvas#game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+#hud {
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top));
+  left: 16px;
+  background: rgba(255, 245, 228, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 8px 18px;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+  z-index: 10;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+:root[data-theme="dark"] #hud {
+  background: rgba(40, 26, 19, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hud-title {
+  font-family: 'Gaegu', cursive;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.hud-sub {
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.92;
+  margin-top: 2px;
+}
+.hud-buffs {
+  font-size: 13px;
+  font-weight: 800;
+  color: #c04218;
+  margin-top: 3px;
+  letter-spacing: 0.3px;
+}
+
+#top-right-bar {
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top));
+  right: 16px;
+  display: flex;
+  gap: 10px;
+  z-index: 25;
+}
+.top-btn {
+  background: rgba(255, 245, 228, 0.94);
+  backdrop-filter: blur(8px);
+  color: var(--ink);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  font-size: 21px;
+  border: 0;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s, background-color 0.2s;
+}
+:root[data-theme="dark"] .top-btn {
+  background: rgba(40, 26, 19, 0.94);
+}
+.top-btn:hover {
+  transform: scale(1.08);
+}
+.top-btn:active {
+  transform: scale(0.95);
+}
+
+#toast {
+  position: fixed;
+  left: 50%;
+  top: 18%;
+  transform: translateX(-50%);
+  font-family: 'Gaegu', cursive;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff8eb;
+  background: rgba(42, 24, 16, 0.88);
+  backdrop-filter: blur(6px);
+  padding: 8px 24px;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transition: opacity 0.35s, transform 0.35s;
+  pointer-events: none;
+  text-align: center;
+  z-index: 20;
+}
+
+.ov {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 16, 25, 0.68);
+  backdrop-filter: blur(5px);
+  padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+  z-index: 35;
+  transition: opacity 0.25s;
+}
+.ov[hidden] {
+  display: none;
+}
+.card {
+  background: var(--paper);
+  max-width: 460px;
+  width: 90%;
+  padding: 26px 30px;
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.card h1 {
+  font-family: 'Gaegu', cursive;
+  margin: 0 0 10px;
+  font-size: 46px;
+  line-height: 1;
+  color: var(--accent);
+}
+.card p {
+  margin: 10px 0;
+  font-size: 16px;
+  line-height: 1.45;
+}
+button.action-btn {
+  font-family: 'Gaegu', cursive;
+  font-size: 26px;
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  border-radius: 16px;
+  padding: 9px 28px;
+  margin-top: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--accent-glow);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+button.action-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
+button.action-btn:active {
+  transform: scale(0.97);
+}
+
+.settings-card {
+  max-width: 460px;
+  text-align: left;
+  padding: 22px 26px;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+.settings-card h2 {
+  font-family: 'Gaegu', cursive;
+  margin: 0;
+  font-size: 38px;
+  color: var(--accent);
+}
+.setting-group {
+  margin: 14px 0;
+}
+.setting-label {
+  font-size: 15px;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink);
+  letter-spacing: 0.2px;
+}
+.btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn-row button {
+  flex: 1 1 20%;
+  min-width: 70px;
+  margin-top: 0;
+  padding: 7px 10px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.07);
+  color: var(--ink);
+  border: 1px solid rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-row button.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 2px 10px var(--accent-glow);
+}
+.check-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+.check-label input {
+  accent-color: var(--accent);
+  width: 17px;
+  height: 17px;
+}
+
+.cabin-card {
+  max-width: 480px;
+  text-align: left;
+  padding: 24px 28px;
+}
+.hearth-box {
+  background: rgba(210, 91, 42, 0.12);
+  border: 2px dashed var(--accent);
+  border-radius: 18px;
+  padding: 16px;
+  margin: 12px 0;
+  text-align: center;
+}
+.cabin-actions {
+  display: flex;
+  gap: 10px;
+  margin: 14px 0;
+}
+.cabin-btn {
+  flex: 1;
+  background: var(--paper);
+  border: 2px solid var(--accent);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 800;
+  padding: 10px 8px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.cabin-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+#interact-prompt {
+  position: fixed;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Gaegu', cursive;
+  font-size: 24px;
+  font-weight: 700;
+  border: 0;
+  border-radius: 20px;
+  padding: 10px 28px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  z-index: 20;
+  transition: transform 0.15s;
+  animation: promptBounce 1.8s infinite ease-in-out;
+}
+#interact-prompt:hover {
+  transform: translateX(-50%) scale(1.06);
+}
+@keyframes promptBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-7px); }
+}
+
+#minimap-canvas {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 3px solid rgba(56, 36, 20, 0.65);
+  background: rgba(255, 245, 228, 0.88);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  pointer-events: none;
+}
+
+#touch-controls {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  width: 120px;
+  height: 120px;
+  z-index: 25;
+  display: none;
+  touch-action: none;
+}
+#touch-base {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(4px);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#touch-stick {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  position: absolute;
+  pointer-events: none;
+  transform: translate(0, 0);
+  transition: transform 0.05s ease-out;
+}
+#mobile-buttons {
+  position: fixed;
+  bottom: 24px;
+  right: 136px;
+  display: none;
+  gap: 12px;
+  z-index: 25;
+}
+.mobile-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 245, 228, 0.92);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-size: 22px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  touch-action: none;
+}
+.mobile-btn:active, .mobile-btn.pressed {
+  background: var(--accent);
+  color: #fff;
+}

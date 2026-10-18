@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Amber Valley</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="three.min.js"></script>
+</head>
+<body>
+
+<canvas id="game-canvas"></canvas>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-title">Leaves <span id="n">0</span> / 12 &nbsp;|&nbsp; Critters <span id="cn">0</span></div>
+  <div class="hud-sub" id="season-hud">🍂 Autumn Valley</div>
+  <div class="hud-sub" id="obj" style="font-weight:400">Find the glowing leaves</div>
+  <div class="hud-buffs" id="pw"></div>
+</div>
+
+<!-- Top Bar -->
+<div id="top-right-bar">
+  <button id="sound-btn" class="top-btn" title="Toggle Sound">🔊</button>
+  <button id="menu-btn" class="top-btn" title="Settings">☰</button>
+</div>
+
+<!-- Prompts & Minimap -->
+<button id="interact-prompt" hidden>🏡 Enter Cabin (Press E)</button>
+<canvas id="minimap-canvas" width="110" height="110"></canvas>
+<div id="toast"></div>
+
+<!-- Touch Controls for Mobile / Tablets -->
+<div id="touch-controls">
+  <div id="touch-base">
+    <div id="touch-stick"></div>
+  </div>
+</div>
+<div id="mobile-buttons">
+  <button id="mobile-sprint" class="mobile-btn" title="Sprint">⚡</button>
+  <button id="mobile-jump" class="mobile-btn" title="Jump">⤊</button>
+</div>
+
+<!-- Start Overlay -->
+<div class="ov" id="start">
+  <div class="card">
+    <h1>Amber Valley</h1>
+    <p>Step into a realistic living valley across shifting seasons. Twelve ancient glowing leaves lie hidden amidst sun-dappled groves and whispering shores.</p>
+    <p>Discover the <b>Whispering Monolith</b> to reveal leaf guidance, pray at the <b>Moon Shrine</b> to walk on water, and leap skyward from <b>Fairy Mushrooms</b>!</p>
+    <p><b>W / S / Up / Down</b> Walk &nbsp; <b>A / D / Left / Right</b> Strafe &nbsp; <b>Q / E</b> Rotate Camera<br>
+    <b>Shift</b> Sprint &nbsp; <b>Space</b> Jump<br>
+    <b>Mouse Drag</b> Smooth 360° Camera Look & Pitch &nbsp; <b>Scroll</b> Zoom</p>
+    <button id="go" class="action-btn">Enter the Valley</button>
+  </div>
+</div>
+
+<!-- Win Overlay -->
+<div class="ov" id="win" hidden>
+  <div class="card">
+    <h1>Hearth Lit</h1>
+    <p>The cabin hearth blazes warmly, sending fragrant cedar smoke up into the mountain sky. The valley is peaceful and your journey complete.</p>
+    <button id="again" class="action-btn">Keep Exploring</button>
+  </div>
+</div>
+
+<!-- Settings Overlay -->
+<div class="ov" id="settings-modal" hidden>
+  <div class="card settings-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h2>Valley Settings</h2>
+      <button id="close-settings" style="background:none;border:0;font-size:26px;cursor:pointer;color:var(--ink)">✕</button>
+    </div>
+    
+    <div class="setting-group">
+      <span class="setting-label">Season Shift</span>
+      <div class="btn-row" id="season-btns">
+        <button data-s="spring">🌸 Spring</button>
+        <button data-s="summer">☀️ Summer</button>
+        <button data-s="autumn" class="active">🍂 Autumn</button>
+        <button data-s="winter">❄️ Winter</button>
+      </div>
+      <label class="check-label"><input type="checkbox" id="auto-season"> Dynamic season shift cycle</label>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Time of Day</span>
+      <div class="btn-row" id="tod-btns">
+        <button data-t="0.5" class="active">☀️ Day</button>
+        <button data-t="0.75">🌅 Sunset</button>
+        <button data-t="0.0">🌙 Dark Night</button>
+        <button data-t="0.25">🌄 Dawn</button>
+      </div>
+      <label class="check-label"><input type="checkbox" id="auto-time"> Cycle day/night automatically</label>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Weather Simulation</span>
+      <div class="btn-row" id="weather-btns">
+        <button data-w="clear" class="active">✨ Clear</button>
+        <button data-w="fog">🌫️ Fog</button>
+        <button data-w="rain">🌧️ Rain</button>
+        <button data-w="storm">⚡ Storm</button>
+      </div>
+      <label class="check-label"><input type="checkbox" id="auto-weather"> Dynamic changing weather</label>
+    </div>
+
+    <div class="setting-group">
+      <span class="setting-label">Sound & Atmosphere</span>
+      <div class="btn-row">
+        <button id="toggle-audio-btn" style="flex:1">🔊 Sound: ON</button>
+      </div>
+    </div>
+
+    <div class="setting-group" style="margin-top:12px">
+      <button id="travel-cabin-btn" style="width:100%;font-size:16px;font-weight:700;padding:9px;background:#8b482b;color:#fff;border:0;border-radius:12px;cursor:pointer">🏡 Fast Travel to Woodland Cabin</button>
+    </div>
+
+    <div class="setting-group">
+      <div id="fps-display" style="font-size:13px;opacity:0.8;margin-top:6px">FPS: 60 (Realistic Three.js WebGL)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Cabin Modal -->
+<div class="ov" id="cabin-view" hidden>
+  <div class="card cabin-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h2 style="font-family:'Gaegu',cursive;margin:0;font-size:40px;color:var(--accent)">🏡 Woodland Cabin</h2>
+      <button id="exit-cabin-top" style="background:none;border:0;font-size:26px;cursor:pointer;color:var(--ink)">✕</button>
+    </div>
+    <p style="margin:4px 0 12px;font-size:15px;opacity:0.92">Warm cedar logs and crackling pine embers shelter you from the chilly valley mountain wind.</p>
+    
+    <div class="hearth-box">
+      <div id="hearth-status" style="font-family:'Gaegu',cursive;font-size:26px;font-weight:700;color:var(--accent)">🔥 Hearth: <span id="hearth-leaves">0</span> / 12 Leaves Burning</div>
+      <div id="hearth-desc" style="font-size:14px;margin-top:4px">Leaves placed in the hearth keep the valley illuminated with ancient warmth.</div>
+      <button id="add-leaves-btn" class="action-btn" style="margin-top:10px;font-size:22px;padding:8px 24px">🍂 Feed Leaves to Fire (<span id="avail-leaves">0</span> ready)</button>
+    </div>
+
+    <div class="cabin-actions">
+      <button id="cider-btn" class="cabin-btn">☕ Spiced Cider<small style="display:block;font-size:12px;opacity:0.8;font-weight:400">Swift & Leap vitality</small></button>
+      <button id="sleep-btn" class="cabin-btn">🛌 Rest by Fire<small style="display:block;font-size:12px;opacity:0.8;font-weight:400">Advance time & clear storm</small></button>
+    </div>
+
+    <div id="cabin-outside-note" style="font-size:14px;margin:8px 0;opacity:0.85;text-align:center">Window: Autumn leaves dancing outside</div>
+    <button id="exit-cabin-btn" style="width:100%;margin-top:10px;padding:10px;font-weight:700;border-radius:14px;border:0;background:var(--ink);color:var(--paper);cursor:pointer">🚪 Step Outside into the Valley</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('game-canvas');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.2, 400);
+
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+  antialias: true,
+  powerPreference: 'high-performance'
+});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.08;
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+scene.add(ambientLight);
+
+const sunLight = new THREE.DirectionalLight(0xfff3dc, 1.25);
+sunLight.position.set(45, 95, 45);
+sunLight.castShadow = true;
+sunLight.shadow.mapSize.width = 2048;
+sunLight.shadow.mapSize.height = 2048;
+sunLight.shadow.camera.near = 10;
+sunLight.shadow.camera.far = 240;
+sunLight.shadow.camera.left = -85;
+sunLight.shadow.camera.right = 85;
+sunLight.shadow.camera.top = 85;
+sunLight.shadow.camera.bottom = -85;
+sunLight.shadow.bias = -0.0006;
+scene.add(sunLight);
+
+scene.fog = new THREE.FogExp2(0xebd1a8, 0.0085);
+</script>
+<script src="js/audio.js"></script>
+<script src="js/collision.js"></script>
+<script src="js/textures.js"></script>
+<script src="js/leaf.js"></script>
+<script src="js/character.js"></script>
+<script src="js/world.js"></script>
+<script src="js/critters.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
